@@ -96,6 +96,25 @@
       text-decoration: underline;
     }
 
+    .nav-home-link {
+      background: #1e3a6d;
+      color: #ffffff !important;
+      border-radius: 3px;
+      padding: 2px 7px !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+      margin-right: 4px;
+      border: 1px solid #4d75b0;
+    }
+
+    .nav-home-link:hover,
+    .nav-home-link.active {
+      background: var(--blue-accent);
+      text-decoration: none;
+    }
+
     .cloud-badge {
       font-size: 11px;
       color: #93c5fd;
@@ -201,6 +220,7 @@
       font-weight: 800;
       color: var(--subject-color);
       letter-spacing: -0.5px;
+      display: inline-block;
     }
 
     .site-logo span {
@@ -224,9 +244,9 @@
       margin-top: 2px;
     }
 
-    /* Controles e Botão Novo Tópico */
+    /* Controles de Ação */
     .controls-bar {
-      max-width: 900px;
+      max-width: 960px;
       margin: 14px auto 8px;
       padding: 0 16px;
       display: flex;
@@ -243,10 +263,141 @@
       font-weight: 600;
       border-radius: 3px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .btn-action:hover {
       background: #c3d9f5;
+    }
+
+    /* Catálogo de Boards na Página Inicial (Home) */
+    .home-container {
+      max-width: 960px;
+      margin: 10px auto 40px;
+    }
+
+    .home-banner-box {
+      background: linear-gradient(135deg, #1e3a6d 0%, #14284d 100%);
+      color: #ffffff;
+      padding: 24px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-dark);
+      box-shadow: 0 4px 12px rgba(15, 30, 60, 0.12);
+      text-align: center;
+    }
+
+    .home-banner-box h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .home-banner-box p {
+      font-size: 13.5px;
+      color: #bfdbfe;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .home-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--subject-color);
+      border-bottom: 2px solid var(--border-blue);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .boards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .board-card {
+      background: #ffffff;
+      border: 1px solid var(--border-blue);
+      border-radius: 5px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 2px 5px rgba(15, 30, 60, 0.05);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .board-card:hover {
+      border-color: var(--blue-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(29, 78, 216, 0.12);
+    }
+
+    .board-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .board-card-slug {
+      background: #e0edfc;
+      color: var(--blue-accent);
+      font-weight: 800;
+      font-size: 14px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid #bfdbfe;
+    }
+
+    .board-card-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--subject-color);
+    }
+
+    .board-card-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 14px;
+      flex: 1;
+    }
+
+    .board-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-blue);
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .btn-enter-board {
+      background: var(--blue-accent);
+      color: #ffffff !important;
+      font-weight: 600;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 3px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s;
+    }
+
+    .btn-enter-board:hover {
+      background: var(--blue-hover);
+      text-decoration: none;
     }
 
     /* Formulário de Postagem Retrô */
@@ -418,7 +569,7 @@
       cursor: not-allowed;
     }
 
-    /* Container de Tópicos e Threads */
+    /* Container Principal */
     .main-content {
       max-width: 1050px;
       margin: 0 auto;
@@ -801,7 +952,7 @@
   <nav class="top-bar">
     <div class="nav-boards-wrapper" id="nav-boards-wrapper">
       <span class="bracket">[</span>
-      <span style="color: #93bbee; font-style: italic;">Carregando abas...</span>
+      <a href="#home" class="nav-board-link nav-home-link">🏠 Início</a>
       <span class="bracket">]</span>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
@@ -822,21 +973,19 @@
     </div>
   </aside>
 
-  <!-- Cabeçalho -->
+  <!-- Cabeçalho Principal -->
   <header class="site-header">
-    <h1 class="site-logo"><span>Y</span>chan</h1>
-    <h2 class="board-title" id="display-board-title">/b/</h2>
-    <p class="board-desc" id="display-board-desc">Imageboard em Tempo Real</p>
+    <h1 class="site-logo">
+      <a href="#home" style="color: inherit; text-decoration: none;" title="Ir para o Início / Catálogo de Boards"><span>Y</span>chan</a>
+    </h1>
+    <h2 class="board-title" id="display-board-title">Carregando...</h2>
+    <p class="board-desc" id="display-board-desc"></p>
   </header>
 
-  <!-- Botões de Ação do Board -->
+  <!-- Botões de Ação do Board / Home -->
   <div class="controls-bar" id="controls-bar">
-    <div id="controls-left">
-      <button class="btn-action" id="btn-new-thread">✍️ Criar Novo Tópico</button>
-    </div>
-    <div id="controls-right">
-      <!-- Botão voltar se estiver em thread única -->
-    </div>
+    <div id="controls-left"></div>
+    <div id="controls-right"></div>
   </div>
 
   <!-- Caixa de Formulário Retrô (Oculta por padrão) -->
@@ -885,11 +1034,11 @@
     </form>
   </div>
 
-  <!-- Conteúdo Central: Tópicos e Respostas -->
+  <!-- Conteúdo Central: Catálogo de Boards, Tópicos ou Respostas -->
   <main class="main-content" id="main-content">
     <div class="empty-state">
       <h3>Sincronizando com Firestore...</h3>
-      <p>Aguarde enquanto os dados mais recentes são baixados da nuvem.</p>
+      <p>Aguarde enquanto as abas e tópicos são carregados da nuvem.</p>
     </div>
   </main>
 
@@ -901,7 +1050,7 @@
         <button type="button" class="modal-btn-close" id="btn-close-login">&times;</button>
       </div>
       <form id="form-login-mod" autocomplete="off">
-        <!-- Iscas invisíveis para anular o autofill indesejado de gerenciadores de senhas -->
+        <!-- Iscas invisíveis para anular o autofill indesejado de navegadores -->
         <input type="text" name="decoy_u" style="position:absolute;top:-9999px;left:-9999px;" tabindex="-1" autocomplete="off">
         <input type="password" name="decoy_p" style="position:absolute;top:-9999px;left:-9999px;" tabindex="-1" autocomplete="new-password">
 
@@ -1010,7 +1159,7 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-    // Configuração oficial do Firebase fornecida pelo usuário
+    // Configuração oficial do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAFTV6QXy30GuQhOAPV42S-wi38345t6to",
       authDomain: "ychan-db.firebaseapp.com",
@@ -1021,13 +1170,12 @@
       measurementId: "G-39FKY8FE07"
     };
 
-    // Inicialização do Firebase
     const app = initializeApp(firebaseConfig);
     let analytics = null;
     try {
       analytics = getAnalytics(app);
     } catch (e) {
-      // Analytics opcional caso executado offline ou em ambiente restrito
+      // Analytics opcional
     }
     const db = getFirestore(app);
 
@@ -1041,24 +1189,25 @@
 
     class YchanFirebase {
       constructor() {
-        this.currentBoardSlug = "b";
+        // Sem referência fixa ou hardcoded a nenhuma aba 'b'!
+        this.currentBoardSlug = null;
         this.activeThreadId = null;
+        this.viewMode = "home"; // 'home' | 'board' | 'thread'
         this.currentAttachmentBase64 = null;
         this.currentAttachmentName = null;
         this.currentAttachmentSize = null;
         this.isModerator = false;
 
-        // Estado em memória sincronizado em tempo real com o Firestore
         this.boards = [];
         this.threads = [];
-        this.boardsInitAttempted = false;
+        this.firestoreLoaded = false;
 
         this.checkAuth();
         this.bindEvents();
         this.handleRoute();
         window.addEventListener("hashchange", () => this.handleRoute());
 
-        // Inicia escutas em tempo real (onSnapshot)
+        // Escutas em tempo real com Firestore
         this.initFirestoreSync();
       }
 
@@ -1067,17 +1216,28 @@
        * ------------------------------------------------------------- */
       initFirestoreSync() {
         // Escuta em tempo real da coleção 'boards'
-        onSnapshot(collection(db, "boards"), async (snapshot) => {
+        onSnapshot(collection(db, "boards"), (snapshot) => {
           this.boards = snapshot.docs.map(d => ({ docId: d.id, ...d.data() }));
+          this.firestoreLoaded = true;
 
-          // Se a coleção estiver totalmente vazia no Firestore, cria as duas abas padrão vazias
-          if (snapshot.empty && !this.boardsInitAttempted) {
-            this.boardsInitAttempted = true;
-            await this.initDefaultBoards();
-            return;
+          // Se a board que estava selecionada não existe mais (ex: apagada pelo CMS)
+          if (this.currentBoardSlug && !this.boards.some(b => b.slug === this.currentBoardSlug)) {
+            if (this.boards.length > 0) {
+              // Carrega automaticamente a primeira da lista
+              this.currentBoardSlug = this.boards[0].slug;
+              if (this.viewMode === "board") {
+                window.location.hash = `#${this.currentBoardSlug}`;
+              }
+            } else {
+              // Nenhuma aba restante: vai para Home limpa
+              this.currentBoardSlug = null;
+              this.viewMode = "home";
+              window.location.hash = "#home";
+            }
           }
 
           this.updateCloudStatus(true);
+          this.handleRoute();
           this.render();
         }, (error) => {
           console.error("Erro na escuta de boards do Firestore:", error);
@@ -1093,25 +1253,6 @@
           console.error("Erro na escuta de threads do Firestore:", error);
           this.updateCloudStatus(false);
         });
-      }
-
-      async initDefaultBoards() {
-        try {
-          await setDoc(doc(db, "boards", "b"), {
-            slug: "b",
-            name: "Aleatório",
-            desc: "Espaço livre para conversas aleatórias e memes.",
-            createdAt: serverTimestamp()
-          });
-          await setDoc(doc(db, "boards", "tech"), {
-            slug: "tech",
-            name: "Tecnologia",
-            desc: "Discussões sobre computadores, código, hardware e Linux.",
-            createdAt: serverTimestamp()
-          });
-        } catch (e) {
-          console.error("Erro ao inicializar abas padrão no Firestore:", e);
-        }
       }
 
       updateCloudStatus(isConnected) {
@@ -1144,34 +1285,67 @@
       }
 
       /* -------------------------------------------------------------
-       * 2. Roteamento Hash (#b, #tech, #thread/1001)
+       * 2. Roteamento Dinâmico sem Referência Fixa
        * ------------------------------------------------------------- */
       handleRoute() {
         const hash = window.location.hash.replace("#", "").trim();
         const parts = hash.split("/").filter(Boolean);
 
+        // Se for explicitamente home ou vazio
+        if (!hash || parts[0] === "home" || parts[0] === "inicio") {
+          this.viewMode = "home";
+          this.currentBoardSlug = null;
+          this.activeThreadId = null;
+          this.render();
+          return;
+        }
+
+        // Rota de thread: #thread/1001
         if (parts[0] === "thread" && parts[1]) {
           const threadId = parts[1];
           const thread = this.threads.find(t => t.id === threadId);
           if (thread) {
             this.currentBoardSlug = thread.boardSlug;
             this.activeThreadId = threadId;
+            this.viewMode = "thread";
             this.render();
             return;
           }
         }
 
+        // Rota de board: #slug
         if (parts[0]) {
           const board = this.boards.find(b => b.slug === parts[0]);
           if (board) {
             this.currentBoardSlug = board.slug;
             this.activeThreadId = null;
+            this.viewMode = "board";
+            this.render();
+            return;
+          }
+
+          // Se a aba requisitada não existe mais ou foi apagada:
+          // Se houver abas cadastradas, carrega a primeira da lista. Caso contrário, exibe limpo.
+          if (this.boards.length > 0) {
+            this.currentBoardSlug = this.boards[0].slug;
+            this.activeThreadId = null;
+            this.viewMode = "board";
+            window.location.replace(`#${this.currentBoardSlug}`);
+            this.render();
+            return;
+          } else if (this.firestoreLoaded) {
+            // Nenhuma aba cadastrada no Firestore
+            this.currentBoardSlug = null;
+            this.activeThreadId = null;
+            this.viewMode = "home";
             this.render();
             return;
           }
         }
 
-        this.currentBoardSlug = this.boards.length > 0 ? this.boards[0].slug : "b";
+        // Padrão: Página Inicial (Home / Catálogo de Boards)
+        this.viewMode = "home";
+        this.currentBoardSlug = null;
         this.activeThreadId = null;
         this.render();
       }
@@ -1248,51 +1422,119 @@
         const wrapper = document.getElementById("nav-boards-wrapper");
         if (!wrapper) return;
 
+        const isHome = this.viewMode === "home" || !this.currentBoardSlug;
+        const homeLink = `<a href="#home" class="nav-board-link nav-home-link ${isHome ? 'active' : ''}">🏠 Início</a>`;
+
         if (this.boards.length === 0) {
-          wrapper.innerHTML = `<span class="bracket">[</span> <span style="color:#93bbee;">Carregando...</span> <span class="bracket">]</span>`;
+          wrapper.innerHTML = `<span class="bracket">[</span> ${homeLink} <span style="color:#93bbee;font-size:11px;">(Sem abas cadastradas)</span> <span class="bracket">]</span>`;
           return;
         }
 
         const linksHtml = this.boards.map(b => {
-          const isActive = b.slug === this.currentBoardSlug && !this.activeThreadId;
+          const isActive = !isHome && b.slug === this.currentBoardSlug && !this.activeThreadId;
           return `<a href="#${b.slug}" class="nav-board-link ${isActive ? 'active' : ''}">/${b.slug}/</a>`;
         }).join(` <span class="bracket">/</span> `);
 
-        wrapper.innerHTML = `<span class="bracket">[</span> ${linksHtml} <span class="bracket">]</span>`;
+        wrapper.innerHTML = `<span class="bracket">[</span> ${homeLink} <span class="bracket">|</span> ${linksHtml} <span class="bracket">]</span>`;
       }
 
       renderBoardHeader() {
-        const board = this.boards.find(b => b.slug === this.currentBoardSlug) || {
-          slug: this.currentBoardSlug,
-          name: "Board",
-          desc: "Imageboard em Tempo Real"
-        };
-
         const titleEl = document.getElementById("display-board-title");
         const descEl = document.getElementById("display-board-desc");
 
-        if (titleEl) titleEl.textContent = `/${board.slug}/ - ${board.name}`;
-        if (descEl) descEl.textContent = board.desc || "Imageboard em Tempo Real";
+        if (this.viewMode === "home") {
+          if (titleEl) titleEl.textContent = "Catálogo Geral de Boards";
+          if (descEl) descEl.textContent = "Diretório oficial de discussões e abas ativas do Ychan";
+          return;
+        }
+
+        if (this.boards.length === 0) {
+          if (titleEl) titleEl.textContent = "Nenhuma Aba Cadastrada";
+          if (descEl) descEl.textContent = "O fórum está vazio. Crie uma aba no painel CMS de moderação.";
+          return;
+        }
+
+        const board = this.boards.find(b => b.slug === this.currentBoardSlug);
+        if (board) {
+          if (titleEl) titleEl.textContent = `/${board.slug}/ - ${board.name}`;
+          if (descEl) descEl.textContent = board.desc || "Imageboard em Tempo Real";
+        } else {
+          if (titleEl) titleEl.textContent = "Aba não encontrada";
+          if (descEl) descEl.textContent = "Selecione uma aba válida no menu acima ou retorne ao Início.";
+        }
       }
 
       renderControls() {
-        const btnNewThread = document.getElementById("btn-new-thread");
+        const controlsLeft = document.getElementById("controls-left");
         const controlsRight = document.getElementById("controls-right");
 
-        if (this.activeThreadId) {
-          if (btnNewThread) btnNewThread.textContent = "✍️ Responder a este Tópico";
+        if (this.viewMode === "home") {
+          // Na Home, exibe indicador de abas e atalho para CMS se moderador
+          if (controlsLeft) {
+            controlsLeft.innerHTML = `
+              <span style="font-size: 13px; font-weight: 700; color: var(--subject-color);">
+                📂 Diretório de Abas (${this.boards.length})
+              </span>
+            `;
+          }
           if (controlsRight) {
-            controlsRight.innerHTML = `<a href="#${this.currentBoardSlug}" class="btn-action">⬅ Voltar para /${this.currentBoardSlug}/</a>`;
+            controlsRight.innerHTML = this.isModerator ? `
+              <button class="btn-action" onclick="window.ychan.openCms()">⚙️ Nova Board (CMS)</button>
+            ` : "";
+          }
+          return;
+        }
+
+        // Modo Thread ou Modo Board
+        if (this.activeThreadId) {
+          if (controlsLeft) {
+            controlsLeft.innerHTML = `<button class="btn-action" id="btn-new-thread">✍️ Responder a este Tópico</button>`;
+          }
+          if (controlsRight) {
+            controlsRight.innerHTML = `
+              <a href="#${this.currentBoardSlug}" class="btn-action">⬅ Voltar para /${this.currentBoardSlug}/</a>
+              <a href="#home" class="btn-action" style="margin-left:6px;">🏠 Início</a>
+            `;
           }
         } else {
-          if (btnNewThread) btnNewThread.textContent = "✍️ Criar Novo Tópico";
-          if (controlsRight) controlsRight.innerHTML = "";
+          if (this.boards.length > 0 && this.currentBoardSlug) {
+            if (controlsLeft) {
+              controlsLeft.innerHTML = `<button class="btn-action" id="btn-new-thread">✍️ Criar Novo Tópico</button>`;
+            }
+            if (controlsRight) {
+              controlsRight.innerHTML = `<a href="#home" class="btn-action">🏠 Ver Todas as Boards</a>`;
+            }
+          } else {
+            if (controlsLeft) controlsLeft.innerHTML = "";
+            if (controlsRight) controlsRight.innerHTML = `<a href="#home" class="btn-action">🏠 Início</a>`;
+          }
+        }
+
+        // Reatribuir evento do botão novo tópico
+        const newBtn = document.getElementById("btn-new-thread");
+        if (newBtn) {
+          newBtn.onclick = () => {
+            const form = document.getElementById("form-container");
+            if (form) {
+              form.classList.toggle("hidden");
+              if (!form.classList.contains("hidden")) {
+                form.scrollIntoView({ behavior: "smooth" });
+              }
+            }
+          };
         }
       }
 
       renderFormState() {
         const formTitle = document.getElementById("form-title-text");
         const subjectField = document.getElementById("form-subject-field");
+        const formContainer = document.getElementById("form-container");
+
+        // Na Home, fecha o formulário de postagem
+        if (this.viewMode === "home") {
+          if (formContainer) formContainer.classList.add("hidden");
+          return;
+        }
 
         if (this.activeThreadId) {
           if (formTitle) formTitle.textContent = `Responder ao Tópico No.${this.activeThreadId}`;
@@ -1304,19 +1546,26 @@
       }
 
       /* -------------------------------------------------------------
-       * 5. Renderização dos Tópicos e Posts (com Float Left)
+       * 5. Renderização do Conteúdo (Home, Board e Thread)
        * ------------------------------------------------------------- */
       renderContent() {
         const container = document.getElementById("main-content");
         if (!container) return;
 
+        // Visualização 1: Home (Catálogo Geral de Boards)
+        if (this.viewMode === "home") {
+          this.renderHomeView(container);
+          return;
+        }
+
+        // Visualização 2: Thread Detalhada
         if (this.activeThreadId) {
           const thread = this.threads.find(t => t.id === this.activeThreadId);
           if (!thread) {
             container.innerHTML = `
               <div class="empty-state">
                 <h3>Tópico não encontrado ou removido da nuvem.</h3>
-                <p><a href="#${this.currentBoardSlug}">Voltar para /${this.currentBoardSlug}/</a></p>
+                <p><a href="#${this.currentBoardSlug}">Voltar para /${this.currentBoardSlug}/</a> | <a href="#home">Ir para o Início</a></p>
               </div>
             `;
             return;
@@ -1325,14 +1574,20 @@
           return;
         }
 
-        // Tópicos pertencentes à board ativa
+        // Visualização 3: Board View (Tópicos da Aba Selecionada)
+        if (!this.currentBoardSlug) {
+          this.renderHomeView(container);
+          return;
+        }
+
         const boardThreads = this.threads.filter(t => t.boardSlug === this.currentBoardSlug);
 
         if (boardThreads.length === 0) {
           container.innerHTML = `
             <div class="empty-state">
-              <h3>Nenhum tópico criado nesta aba ainda.</h3>
-              <p>O Firestore está conectado! Clique em <b>"Criar Novo Tópico"</b> acima para postar na nuvem em tempo real.</p>
+              <h3>Nenhum tópico criado na aba /${this.escape(this.currentBoardSlug)}/ ainda.</h3>
+              <p>O Firestore está conectado! Clique em <b>"Criar Novo Tópico"</b> acima para iniciar uma conversa.</p>
+              <p style="margin-top: 10px;"><a href="#home" class="btn-action">🏠 Voltar ao Catálogo de Boards</a></p>
             </div>
           `;
           return;
@@ -1384,6 +1639,69 @@
         container.innerHTML = html;
       }
 
+      /* -------------------------------------------------------------
+       * 5.1 Catálogo Geral de Boards (Home View)
+       * ------------------------------------------------------------- */
+      renderHomeView(container) {
+        if (this.boards.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <h3>Nenhuma aba (board) cadastrada no momento.</h3>
+              <p>O banco de dados do fórum está limpo e sem abas ativas.</p>
+              ${this.isModerator ? `
+                <div style="margin-top: 14px;">
+                  <button type="button" class="btn-submit-post" onclick="window.ychan.openCms()">⚙️ Criar Primeira Board no CMS</button>
+                </div>
+              ` : `
+                <p style="margin-top: 8px; font-size: 12px; color: var(--text-muted);">
+                  Se você for o administrador, faça login pelo botão <b>🛡️ Mod Login</b> no topo para criar as primeiras abas.
+                </p>
+              `}
+            </div>
+          `;
+          return;
+        }
+
+        const sortedBoards = [...this.boards].sort((a, b) => (a.slug || "").localeCompare(b.slug || ""));
+
+        const cardsHtml = sortedBoards.map(board => {
+          const threadCount = this.threads.filter(t => t.boardSlug === board.slug).length;
+          return `
+            <div class="board-card">
+              <div>
+                <div class="board-card-header">
+                  <span class="board-card-slug">/${this.escape(board.slug)}/</span>
+                  <span class="board-card-name">${this.escape(board.name)}</span>
+                </div>
+                <p class="board-card-desc">${this.escape(board.desc || "Sem descrição disponível.")}</p>
+              </div>
+              <div class="board-card-footer">
+                <span>💬 <b>${threadCount}</b> tópico${threadCount === 1 ? '' : 's'}</span>
+                <a href="#${board.slug}" class="btn-enter-board">Entrar no Board ➔</a>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        container.innerHTML = `
+          <div class="home-container">
+            <div class="home-banner-box">
+              <h2>Bem-vindo ao Ychan</h2>
+              <p>Imageboard anônimo e minimalista em tempo real. Escolha uma das abas abaixo para navegar ou crie novos tópicos.</p>
+            </div>
+
+            <div class="home-section-title">
+              <span>📋 Catálogo Geral de Boards Ativas</span>
+              <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">Total: <b>${this.boards.length}</b> abas</span>
+            </div>
+
+            <div class="boards-grid">
+              ${cardsHtml}
+            </div>
+          </div>
+        `;
+      }
+
       renderThreadDetail(thread, container) {
         const replies = Array.isArray(thread.replies) ? thread.replies : [];
 
@@ -1413,7 +1731,8 @@
             </div>
 
             <div style="margin-top: 20px; display: flex; gap: 10px; align-items: center;">
-              <a href="#${this.currentBoardSlug}" class="btn-action">⬅ Voltar ao Board</a>
+              <a href="#${this.currentBoardSlug}" class="btn-action">⬅ Voltar para /${this.currentBoardSlug}/</a>
+              <a href="#home" class="btn-action">🏠 Início</a>
               <button type="button" class="btn-action" onclick="window.ychan.openForm()">✍️ Responder</button>
             </div>
           </div>
@@ -1585,6 +1904,11 @@
             this.showToast(`Resposta No.${postId} enviada ao Firestore!`, "success");
           } else {
             // Criar Novo Tópico (OP) no Firestore
+            if (!this.currentBoardSlug) {
+              this.showToast("Selecione um board antes de criar um tópico.", "danger");
+              return;
+            }
+
             const newThread = {
               id: postId,
               postNumber: postId,
@@ -1648,7 +1972,6 @@
         reader.onload = (e) => {
           const img = new Image();
           img.onload = () => {
-            // Otimização para até 600px para garantir tamanho ultraleve no Firestore
             const maxDim = 600;
             let width = img.width;
             let height = img.height;
@@ -1746,7 +2069,7 @@
       }
 
       /* -------------------------------------------------------------
-       * 10. Painel CMS de Gerenciamento de Abas/Boards na Nuvem
+       * 10. Painel CMS de Gerenciamento de Abas na Nuvem
        * ------------------------------------------------------------- */
       openCms() {
         if (!this.isModerator) {
@@ -1761,10 +2084,15 @@
         const tbody = document.getElementById("cms-table-body");
         if (!tbody) return;
 
+        if (this.boards.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:14px;">Nenhuma aba cadastrada ainda.</td></tr>`;
+          return;
+        }
+
         const rows = this.boards.map(b => {
           return `
             <tr>
-              <td><b>/${b.slug}/</b></td>
+              <td><b>/${this.escape(b.slug)}/</b></td>
               <td>${this.escape(b.name)}</td>
               <td>${this.escape(b.desc)}</td>
               <td>
@@ -1829,11 +2157,6 @@
           return;
         }
 
-        if (this.boards.length <= 1) {
-          this.showToast("Você não pode excluir a única aba restante.", "danger");
-          return;
-        }
-
         try {
           await deleteDoc(doc(db, "boards", slug));
 
@@ -1847,10 +2170,17 @@
 
           this.showToast(`Aba /${slug}/ excluída do Firestore.`, "success");
 
+          // Redirecionamento dinâmico sem referências fixas
           if (this.currentBoardSlug === slug) {
             const remaining = this.boards.filter(b => b.slug !== slug);
-            this.currentBoardSlug = remaining.length > 0 ? remaining[0].slug : "b";
-            window.location.hash = `#${this.currentBoardSlug}`;
+            if (remaining.length > 0) {
+              this.currentBoardSlug = remaining[0].slug;
+              window.location.hash = `#${this.currentBoardSlug}`;
+            } else {
+              this.currentBoardSlug = null;
+              this.viewMode = "home";
+              window.location.hash = "#home";
+            }
           }
         } catch (err) {
           console.error("Erro ao excluir aba do Firestore:", err);
@@ -1950,19 +2280,6 @@
        * 12. Listeners de Eventos
        * ------------------------------------------------------------- */
       bindEvents() {
-        const btnNewThread = document.getElementById("btn-new-thread");
-        if (btnNewThread) {
-          btnNewThread.addEventListener("click", () => {
-            const form = document.getElementById("form-container");
-            if (form) {
-              form.classList.toggle("hidden");
-              if (!form.classList.contains("hidden")) {
-                form.scrollIntoView({ behavior: "smooth" });
-              }
-            }
-          });
-        }
-
         const btnCloseForm = document.getElementById("btn-close-form");
         if (btnCloseForm) {
           btnCloseForm.addEventListener("click", () => this.closeForm());
