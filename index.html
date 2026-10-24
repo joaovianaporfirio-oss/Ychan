@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ychan - Imageboard em Tempo Real</title>
+  <style>
+    /* ==========================================================================
+       Ychan - Design Minimalista em Tons de Azul (Retro Imageboard Style)
+       ========================================================================== */
+    :root {
+      --bg-body: #edf3fa;
+      --bg-header: #14284d;
+      --bg-header-light: #1e3a6d;
+      --bg-reply: #d5e4f7;
+      --bg-reply-hover: #c7dbf4;
+      --border-blue: #9abde4;
+      --border-dark: #6e99ce;
+      --text-main: #0f1c30;
+      --text-muted: #536b8e;
+      --blue-accent: #1d4ed8;
+      --blue-hover: #1e40af;
+      --subject-color: #0c234a;
+      --name-color: #173b75;
+      --greentext: #2e7d32;
+      --quote-link: #1d4ed8;
+      --danger-color: #b91c1c;
+      --danger-bg: #fee2e2;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "Consolas", "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      font-size: 13.5px;
+      line-height: 1.45;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: var(--blue-accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Barra Superior Fixa */
+    .top-bar {
+      background-color: var(--bg-header);
+      color: #e2eafc;
+      font-size: 12px;
+      padding: 6px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid var(--border-dark);
+      box-shadow: 0 1px 4px rgba(15, 30, 60, 0.15);
+    }
+
+    .nav-boards-wrapper {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .bracket {
+      color: #799dcb;
+    }
+
+    .nav-board-link {
+      color: #b8d4f8;
+      font-weight: 600;
+      padding: 1px 4px;
+    }
+
+    .nav-board-link:hover,
+    .nav-board-link.active {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    .cloud-badge {
+      font-size: 11px;
+      color: #93c5fd;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      border: 1px solid rgba(147, 197, 253, 0.25);
+    }
+
+    .cloud-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #eab308;
+      box-shadow: 0 0 5px #eab308;
+    }
+
+    .cloud-dot.connected {
+      background: #22c55e;
+      box-shadow: 0 0 5px #22c55e;
+    }
+
+    .cloud-dot.error {
+      background: #ef4444;
+      box-shadow: 0 0 5px #ef4444;
+    }
+
+    .btn-mod-login {
+      background: var(--bg-header-light);
+      color: #e2eafc;
+      border: 1px solid #4d75b0;
+      padding: 3px 9px;
+      font-size: 11.5px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .btn-mod-login:hover {
+      background: #2a5294;
+      color: #ffffff;
+    }
+
+    /* Barra de Notificação de Moderação Ativa */
+    .mod-banner {
+      background: #0f1c36;
+      color: #bfdbfe;
+      padding: 6px 16px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #365a94;
+    }
+
+    .mod-banner-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-cms {
+      background: var(--blue-accent);
+      color: #fff;
+      border: none;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .btn-cms:hover {
+      background: var(--blue-hover);
+    }
+
+    .btn-logout {
+      background: var(--danger-color);
+      color: #fff;
+      border: none;
+      padding: 3px 9px;
+      font-size: 11px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .btn-logout:hover {
+      background: #991b1b;
+    }
+
+    /* Cabeçalho */
+    .site-header {
+      text-align: center;
+      padding: 24px 16px 12px;
+      background: linear-gradient(180deg, #e0ebf7 0%, var(--bg-body) 100%);
+      border-bottom: 1px solid var(--border-blue);
+    }
+
+    .site-logo {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--subject-color);
+      letter-spacing: -0.5px;
+    }
+
+    .site-logo span {
+      background: var(--blue-accent);
+      color: #fff;
+      padding: 1px 7px;
+      border-radius: 4px;
+      margin-right: 2px;
+    }
+
+    .board-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--subject-color);
+      margin-top: 4px;
+    }
+
+    .board-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Controles e Botão Novo Tópico */
+    .controls-bar {
+      max-width: 900px;
+      margin: 14px auto 8px;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-action {
+      background: #dae7f8;
+      border: 1px solid var(--border-dark);
+      color: var(--subject-color);
+      padding: 5px 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .btn-action:hover {
+      background: #c3d9f5;
+    }
+
+    /* Formulário de Postagem Retrô */
+    .form-container {
+      max-width: 580px;
+      margin: 12px auto 20px;
+      background: #dbe7f7;
+      border: 1px solid var(--border-dark);
+      border-radius: 4px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 5px rgba(15, 30, 60, 0.08);
+    }
+
+    .form-container.hidden {
+      display: none;
+    }
+
+    .form-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--subject-color);
+      border-bottom: 1px solid var(--border-blue);
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .form-close-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .form-field {
+      flex: 1;
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .input-text,
+    .input-textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border-dark);
+      background: #ffffff;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 13px;
+      border-radius: 3px;
+    }
+
+    .input-text:focus,
+    .input-textarea:focus {
+      outline: none;
+      border-color: var(--blue-accent);
+      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.15);
+    }
+
+    .input-textarea {
+      min-height: 85px;
+      resize: vertical;
+    }
+
+    .media-box-input {
+      background: #e9f1fb;
+      border: 1px dashed var(--border-dark);
+      border-radius: 3px;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .file-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-file-select {
+      background: #c7dbf4;
+      border: 1px solid var(--border-dark);
+      color: var(--subject-color);
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .btn-file-select:hover {
+      background: #b5d0f0;
+    }
+
+    .preview-bar {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      padding: 5px 8px;
+      border: 1px solid var(--border-blue);
+      border-radius: 3px;
+    }
+
+    .preview-bar.hidden {
+      display: none;
+    }
+
+    .preview-img-tag {
+      max-width: 55px;
+      max-height: 55px;
+      object-fit: cover;
+      border: 1px solid var(--border-blue);
+      border-radius: 2px;
+    }
+
+    .btn-remove-preview {
+      background: var(--danger-bg);
+      color: var(--danger-color);
+      border: 1px solid #fca5a5;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      cursor: pointer;
+      margin-left: auto;
+    }
+
+    .form-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .btn-submit-post {
+      background: var(--blue-accent);
+      color: #fff;
+      border: 1px solid var(--blue-hover);
+      padding: 6px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .btn-submit-post:hover {
+      background: var(--blue-hover);
+    }
+
+    .btn-submit-post:disabled {
+      background: #93c5fd;
+      border-color: #bfdbfe;
+      cursor: not-allowed;
+    }
+
+    /* Container de Tópicos e Threads */
+    .main-content {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 10px 16px 40px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .empty-state {
+      background: #dae7f8;
+      border: 1px dashed var(--border-dark);
+      border-radius: 4px;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      margin-top: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      color: var(--subject-color);
+      margin-bottom: 6px;
+    }
+
+    .thread-block {
+      border-bottom: 1px solid var(--border-blue);
+      padding-bottom: 24px;
+      margin-bottom: 24px;
+    }
+
+    /* Post Original (OP) e Respostas */
+    .post-header {
+      font-size: 12.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    .post-subject {
+      font-weight: 700;
+      color: var(--subject-color);
+      font-size: 14px;
+    }
+
+    .post-author {
+      font-weight: 700;
+      color: var(--name-color);
+    }
+
+    .post-number {
+      font-family: var(--font-mono);
+      color: var(--blue-accent);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .post-number:hover {
+      text-decoration: underline;
+    }
+
+    .btn-delete-post {
+      background: var(--danger-bg);
+      color: var(--danger-color);
+      border: 1px solid #fca5a5;
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 2px;
+      cursor: pointer;
+      margin-left: 6px;
+    }
+
+    .btn-delete-post:hover {
+      background: #fecaca;
+    }
+
+    /* Layout Clássico com Float Left para Imagem */
+    .post-container {
+      margin-bottom: 12px;
+    }
+
+    .post-container::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    .thumb-wrapper {
+      float: left;
+      margin-right: 18px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .thumb-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+      word-break: break-all;
+    }
+
+    .thumb-img {
+      max-width: 200px;
+      max-height: 200px;
+      object-fit: contain;
+      background: #dfeaf8;
+      border: 1px solid var(--border-dark);
+      border-radius: 2px;
+      cursor: pointer;
+      display: block;
+      transition: border-color 0.15s ease;
+    }
+
+    .thumb-img:hover {
+      border-color: var(--blue-accent);
+      box-shadow: 0 0 6px rgba(29, 78, 216, 0.25);
+    }
+
+    .post-body-text {
+      font-size: 13.5px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Greentext & Quotes */
+    .greentext {
+      color: var(--greentext);
+      font-weight: 500;
+    }
+
+    .quote-link {
+      color: var(--quote-link);
+      font-weight: 600;
+      background: #e2edfa;
+      padding: 0 3px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .quote-link:hover {
+      background: #cee1f7;
+    }
+
+    /* Respostas (Replies) */
+    .replies-list {
+      margin-left: 20px;
+      margin-top: 10px;
+      border-left: 2px solid var(--border-blue);
+      padding-left: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .reply-card {
+      background-color: var(--bg-reply);
+      border: 1px solid var(--border-blue);
+      border-radius: 4px;
+      padding: 9px 13px;
+      max-width: 95%;
+      align-self: flex-start;
+      box-shadow: 0 1px 3px rgba(15, 30, 60, 0.05);
+      transition: background-color 0.15s ease;
+    }
+
+    .reply-card::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    .reply-card:hover {
+      background-color: var(--bg-reply-hover);
+    }
+
+    .reply-card.highlight {
+      background-color: #bbd5f5;
+      border-color: var(--blue-accent);
+    }
+
+    .reply-card .thumb-img {
+      max-width: 125px;
+      max-height: 125px;
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 20, 35, 0.88);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      cursor: zoom-out;
+      padding: 20px;
+    }
+
+    .lightbox-modal.hidden {
+      display: none;
+    }
+
+    .lightbox-img {
+      max-width: 92vw;
+      max-height: 88vh;
+      object-fit: contain;
+      border: 2px solid #6b93c4;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+      background: #000;
+    }
+
+    /* Modal Genérico / Login / CMS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 30, 56, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal-window {
+      background: #edf3fa;
+      border: 2px solid var(--border-dark);
+      border-radius: 6px;
+      width: 100%;
+      max-width: 520px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(15, 30, 60, 0.2);
+    }
+
+    .modal-window.wide {
+      max-width: 720px;
+    }
+
+    .modal-header-bar {
+      background: var(--bg-header);
+      color: #fff;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .modal-btn-close {
+      background: none;
+      border: none;
+      color: #b8d4f8;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .modal-btn-close:hover {
+      color: #fff;
+    }
+
+    .modal-body-area {
+      padding: 18px 20px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    .modal-footer-bar {
+      padding: 10px 18px;
+      background: #dfeaf7;
+      border-top: 1px solid var(--border-blue);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .cms-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      background: #fff;
+      border: 1px solid var(--border-blue);
+      margin-bottom: 14px;
+    }
+
+    .cms-table th,
+    .cms-table td {
+      padding: 7px 10px;
+      border: 1px solid var(--border-blue);
+      text-align: left;
+    }
+
+    .cms-table th {
+      background: #dae7f8;
+      font-weight: 700;
+      color: var(--subject-color);
+    }
+
+    .cms-btn-mini {
+      padding: 2px 7px;
+      font-size: 11px;
+      border-radius: 2px;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .cms-btn-edit {
+      background: #e0f2fe;
+      color: #0369a1;
+      border-color: #bae6fd;
+    }
+
+    .cms-btn-del {
+      background: var(--danger-bg);
+      color: var(--danger-color);
+      border-color: #fca5a5;
+    }
+
+    /* Notificações Toast */
+    .toast-box {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #14284d;
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      border-left: 4px solid var(--blue-accent);
+      z-index: 10000;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast-box.success { border-left-color: #22c55e; }
+    .toast-box.danger { border-left-color: #ef4444; }
+
+    /* Rodapé */
+    .site-footer {
+      text-align: center;
+      padding: 18px;
+      background: #dbe7f7;
+      border-top: 1px solid var(--border-blue);
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    @media (max-width: 650px) {
+      .thumb-wrapper {
+        float: none;
+        margin-right: 0;
+      }
+      .replies-list {
+        margin-left: 6px;
+        padding-left: 8px;
+      }
+      .reply-card {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Navegação Superior -->
+  <nav class="top-bar">
+    <div class="nav-boards-wrapper" id="nav-boards-wrapper">
+      <span class="bracket">[</span>
+      <span style="color: #93bbee; font-style: italic;">Carregando abas...</span>
+      <span class="bracket">]</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span class="cloud-badge" id="cloud-badge" title="Sincronização em tempo real">
+        <span class="cloud-dot" id="cloud-dot"></span>
+        <span id="cloud-text">Firestore Conectando...</span>
+      </span>
+      <button class="btn-mod-login" id="btn-toggle-login">🛡️ Mod Login</button>
+    </div>
+  </nav>
+
+  <!-- Barra de Notificação de Moderação Ativa -->
+  <aside class="mod-banner" id="mod-banner" style="display: none;">
+    <div>🛡️ <b>Moderação Ativa</b> (Sessão Segura)</div>
+    <div class="mod-banner-buttons">
+      <button class="btn-cms" id="btn-open-cms">⚙️ Painel CMS de Abas</button>
+      <button class="btn-logout" id="btn-do-logout">Sair</button>
+    </div>
+  </aside>
+
+  <!-- Cabeçalho -->
+  <header class="site-header">
+    <h1 class="site-logo"><span>Y</span>chan</h1>
+    <h2 class="board-title" id="display-board-title">/b/</h2>
+    <p class="board-desc" id="display-board-desc">Imageboard em Tempo Real</p>
+  </header>
+
+  <!-- Botões de Ação do Board -->
+  <div class="controls-bar" id="controls-bar">
+    <div id="controls-left">
+      <button class="btn-action" id="btn-new-thread">✍️ Criar Novo Tópico</button>
+    </div>
+    <div id="controls-right">
+      <!-- Botão voltar se estiver em thread única -->
+    </div>
+  </div>
+
+  <!-- Caixa de Formulário Retrô (Oculta por padrão) -->
+  <div class="form-container hidden" id="form-container">
+    <div class="form-header">
+      <span id="form-title-text">Criar Novo Tópico</span>
+      <button type="button" class="form-close-btn" id="btn-close-form" title="Fechar">&times;</button>
+    </div>
+
+    <form id="main-post-form">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="input-author-name">Nome:</label>
+          <input type="text" id="input-author-name" class="input-text" placeholder="Anônimo" maxlength="35">
+        </div>
+        <div class="form-field" id="form-subject-field">
+          <label for="input-post-subject">Assunto:</label>
+          <input type="text" id="input-post-subject" class="input-text" placeholder="Assunto (opcional)" maxlength="70">
+        </div>
+      </div>
+
+      <div class="form-field" style="margin-bottom: 8px;">
+        <label for="input-post-comment">Mensagem:</label>
+        <textarea id="input-post-comment" class="input-textarea" placeholder="Escreva aqui... Linhas com > ficam verdes e >>ID criam citações." rows="4"></textarea>
+      </div>
+
+      <!-- Seção de Upload de Mídia com Conversão Base64 -->
+      <div class="media-box-input">
+        <div class="file-input-wrapper">
+          <label class="btn-file-select" for="file-input-element">📁 Anexar Imagem</label>
+          <input type="file" id="file-input-element" accept="image/*" style="display: none;">
+          <span style="font-size: 11px; color: var(--text-muted);" id="file-status-label">Nenhum arquivo selecionado</span>
+        </div>
+
+        <div class="preview-bar hidden" id="preview-bar">
+          <img src="" id="preview-tag" class="preview-img-tag" alt="Miniatura">
+          <span style="font-size: 11.5px; color: var(--text-muted);" id="preview-details"></span>
+          <button type="button" class="btn-remove-preview" id="btn-remove-attachment">Remover</button>
+        </div>
+      </div>
+
+      <div class="form-footer-row">
+        <span style="font-size: 11px; color: var(--text-muted);">* Postagem anônima sincronizada em tempo real.</span>
+        <button type="submit" class="btn-submit-post" id="btn-submit">Postar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Conteúdo Central: Tópicos e Respostas -->
+  <main class="main-content" id="main-content">
+    <div class="empty-state">
+      <h3>Sincronizando com Firestore...</h3>
+      <p>Aguarde enquanto os dados mais recentes são baixados da nuvem.</p>
+    </div>
+  </main>
+
+  <!-- Modal de Login do Moderador -->
+  <div class="modal-overlay hidden" id="modal-mod-login">
+    <div class="modal-window">
+      <div class="modal-header-bar">
+        <span>🛡️ Login da Moderação</span>
+        <button type="button" class="modal-btn-close" id="btn-close-login">&times;</button>
+      </div>
+      <form id="form-login-mod" autocomplete="off">
+        <!-- Iscas invisíveis para anular o autofill indesejado de gerenciadores de senhas -->
+        <input type="text" name="decoy_u" style="position:absolute;top:-9999px;left:-9999px;" tabindex="-1" autocomplete="off">
+        <input type="password" name="decoy_p" style="position:absolute;top:-9999px;left:-9999px;" tabindex="-1" autocomplete="new-password">
+
+        <div class="modal-body-area">
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+            Área restrita. Digite suas credenciais confidenciais para acessar o painel de moderação e CMS.
+          </p>
+
+          <div style="margin-bottom: 12px;">
+            <label style="display:block; font-size: 11px; font-weight: bold; margin-bottom: 4px;">Usuário:</label>
+            <input type="text" id="mod-adm-uid" name="auth_adm_u" class="input-text" placeholder="Digite o usuário de moderação" autocomplete="new-password" required>
+          </div>
+
+          <div>
+            <label style="display:block; font-size: 11px; font-weight: bold; margin-bottom: 4px;">Senha:</label>
+            <input type="password" id="mod-adm-pwd" name="auth_adm_p" class="input-text" placeholder="Digite a senha confidencial" autocomplete="new-password" required>
+          </div>
+        </div>
+        <div class="modal-footer-bar">
+          <button type="button" class="btn-action" id="btn-cancel-login">Cancelar</button>
+          <button type="submit" class="btn-submit-post">Entrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal do Painel CMS de Abas -->
+  <div class="modal-overlay hidden" id="modal-cms">
+    <div class="modal-window wide">
+      <div class="modal-header-bar">
+        <span>⚙️ Painel CMS - Gerenciar Abas do Fórum (Nuvem)</span>
+        <button type="button" class="modal-btn-close" id="btn-close-cms">&times;</button>
+      </div>
+      <div class="modal-body-area">
+        <h4 style="font-size: 13.5px; color: var(--subject-color); margin-bottom: 8px;">Abas Existentes no Firestore</h4>
+        <table class="cms-table">
+          <thead>
+            <tr>
+              <th style="width: 70px;">Sigla</th>
+              <th>Nome</th>
+              <th>Descrição</th>
+              <th style="width: 110px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="cms-table-body">
+            <!-- Abas listadas aqui -->
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 13.5px; color: var(--subject-color); margin-top: 16px; margin-bottom: 8px;">
+          Criar ou Renomear Aba na Nuvem
+        </h4>
+        <form id="cms-board-form" style="background: #e3edf8; border: 1px solid var(--border-blue); padding: 12px; border-radius: 4px;">
+          <div class="form-row">
+            <div class="form-field" style="max-width: 120px;">
+              <label>Sigla (ex: pol):</label>
+              <input type="text" id="cms-slug-input" class="input-text" placeholder="slug" maxlength="8" required>
+            </div>
+            <div class="form-field">
+              <label>Nome:</label>
+              <input type="text" id="cms-name-input" class="input-text" placeholder="Nome da Aba" maxlength="40" required>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: 8px;">
+            <label>Descrição:</label>
+            <input type="text" id="cms-desc-input" class="input-text" placeholder="Descrição rápida da aba" maxlength="100">
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button type="button" class="btn-action" id="btn-cms-reset-form">Limpar</button>
+            <button type="submit" class="btn-submit-post">Salvar na Nuvem</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer-bar">
+        <button type="button" class="btn-action" id="btn-finish-cms">Concluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal para Ampliar Imagens -->
+  <div class="lightbox-modal hidden" id="lightbox-modal">
+    <img src="" class="lightbox-img" id="lightbox-img" alt="Imagem ampliada">
+  </div>
+
+  <!-- Rodapé -->
+  <footer class="site-footer">
+    <p><b>Ychan Imageboard</b> &copy; 2026 - Conectado ao Firebase Firestore em Tempo Real.</p>
+  </footer>
+
+  <!-- ==========================================================================
+       FIREBASE FIRESTORE INTEGRADO (TEMPO REAL)
+       ========================================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      onSnapshot,
+      deleteDoc,
+      doc,
+      updateDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // Configuração oficial do Firebase fornecida pelo usuário
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFTV6QXy30GuQhOAPV42S-wi38345t6to",
+      authDomain: "ychan-db.firebaseapp.com",
+      projectId: "ychan-db",
+      storageBucket: "ychan-db.firebasestorage.app",
+      messagingSenderId: "1038281884550",
+      appId: "1:1038281884550:web:f6f1fcecadd80a8242e207",
+      measurementId: "G-39FKY8FE07"
+    };
+
+    // Inicialização do Firebase
+    const app = initializeApp(firebaseConfig);
+    let analytics = null;
+    try {
+      analytics = getAnalytics(app);
+    } catch (e) {
+      // Analytics opcional caso executado offline ou em ambiente restrito
+    }
+    const db = getFirestore(app);
+
+    // Hashes criptográficos SHA-256 das credenciais secretas do Moderador
+    const MOD_AUTH_HASH = {
+      userHash: "598bad22c131df61d0cf1b48a2c5e3ab4d78f69988208c9ea1ea54ae2eb23d4a",
+      passHash: "08da77334e07ab9e0eb95c21403e796e10482a42b81cefad18a16bea73f602b6"
+    };
+
+    const MOD_SESSION_KEY = "ychan_v2_mod_auth";
+
+    class YchanFirebase {
+      constructor() {
+        this.currentBoardSlug = "b";
+        this.activeThreadId = null;
+        this.currentAttachmentBase64 = null;
+        this.currentAttachmentName = null;
+        this.currentAttachmentSize = null;
+        this.isModerator = false;
+
+        // Estado em memória sincronizado em tempo real com o Firestore
+        this.boards = [];
+        this.threads = [];
+        this.boardsInitAttempted = false;
+
+        this.checkAuth();
+        this.bindEvents();
+        this.handleRoute();
+        window.addEventListener("hashchange", () => this.handleRoute());
+
+        // Inicia escutas em tempo real (onSnapshot)
+        this.initFirestoreSync();
+      }
+
+      /* -------------------------------------------------------------
+       * 1. Escutas em Tempo Real do Firestore (onSnapshot)
+       * ------------------------------------------------------------- */
+      initFirestoreSync() {
+        // Escuta em tempo real da coleção 'boards'
+        onSnapshot(collection(db, "boards"), async (snapshot) => {
+          this.boards = snapshot.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+          // Se a coleção estiver totalmente vazia no Firestore, cria as duas abas padrão vazias
+          if (snapshot.empty && !this.boardsInitAttempted) {
+            this.boardsInitAttempted = true;
+            await this.initDefaultBoards();
+            return;
+          }
+
+          this.updateCloudStatus(true);
+          this.render();
+        }, (error) => {
+          console.error("Erro na escuta de boards do Firestore:", error);
+          this.updateCloudStatus(false);
+        });
+
+        // Escuta em tempo real da coleção 'threads'
+        onSnapshot(collection(db, "threads"), (snapshot) => {
+          this.threads = snapshot.docs.map(d => ({ docId: d.id, ...d.data() }));
+          this.updateCloudStatus(true);
+          this.render();
+        }, (error) => {
+          console.error("Erro na escuta de threads do Firestore:", error);
+          this.updateCloudStatus(false);
+        });
+      }
+
+      async initDefaultBoards() {
+        try {
+          await setDoc(doc(db, "boards", "b"), {
+            slug: "b",
+            name: "Aleatório",
+            desc: "Espaço livre para conversas aleatórias e memes.",
+            createdAt: serverTimestamp()
+          });
+          await setDoc(doc(db, "boards", "tech"), {
+            slug: "tech",
+            name: "Tecnologia",
+            desc: "Discussões sobre computadores, código, hardware e Linux.",
+            createdAt: serverTimestamp()
+          });
+        } catch (e) {
+          console.error("Erro ao inicializar abas padrão no Firestore:", e);
+        }
+      }
+
+      updateCloudStatus(isConnected) {
+        const dot = document.getElementById("cloud-dot");
+        const text = document.getElementById("cloud-text");
+        if (dot && text) {
+          if (isConnected) {
+            dot.className = "cloud-dot connected";
+            text.textContent = "Firestore Nuvem (Tempo Real)";
+          } else {
+            dot.className = "cloud-dot error";
+            text.textContent = "Firestore Offline / Erro";
+          }
+        }
+      }
+
+      getNextPostNumber() {
+        let max = 1000;
+        for (const t of this.threads) {
+          const num = parseInt(t.postNumber || t.id, 10);
+          if (!isNaN(num) && num > max) max = num;
+          if (t.replies && Array.isArray(t.replies)) {
+            for (const r of t.replies) {
+              const rnum = parseInt(r.id, 10);
+              if (!isNaN(rnum) && rnum > max) max = rnum;
+            }
+          }
+        }
+        return (max + 1).toString();
+      }
+
+      /* -------------------------------------------------------------
+       * 2. Roteamento Hash (#b, #tech, #thread/1001)
+       * ------------------------------------------------------------- */
+      handleRoute() {
+        const hash = window.location.hash.replace("#", "").trim();
+        const parts = hash.split("/").filter(Boolean);
+
+        if (parts[0] === "thread" && parts[1]) {
+          const threadId = parts[1];
+          const thread = this.threads.find(t => t.id === threadId);
+          if (thread) {
+            this.currentBoardSlug = thread.boardSlug;
+            this.activeThreadId = threadId;
+            this.render();
+            return;
+          }
+        }
+
+        if (parts[0]) {
+          const board = this.boards.find(b => b.slug === parts[0]);
+          if (board) {
+            this.currentBoardSlug = board.slug;
+            this.activeThreadId = null;
+            this.render();
+            return;
+          }
+        }
+
+        this.currentBoardSlug = this.boards.length > 0 ? this.boards[0].slug : "b";
+        this.activeThreadId = null;
+        this.render();
+      }
+
+      /* -------------------------------------------------------------
+       * 3. Autenticação Segura do Moderador
+       * ------------------------------------------------------------- */
+      checkAuth() {
+        this.isModerator = sessionStorage.getItem(MOD_SESSION_KEY) === "true";
+        this.updateModBarUI();
+      }
+
+      async hashStr(str) {
+        const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+      }
+
+      async login(username, password) {
+        try {
+          const userHash = await this.hashStr(username.trim());
+          const passHash = await this.hashStr(password.trim());
+
+          if (userHash === MOD_AUTH_HASH.userHash && passHash === MOD_AUTH_HASH.passHash) {
+            this.isModerator = true;
+            sessionStorage.setItem(MOD_SESSION_KEY, "true");
+            this.updateModBarUI();
+            this.closeModal("modal-mod-login");
+            const uInput = document.getElementById("mod-adm-uid");
+            const pInput = document.getElementById("mod-adm-pwd");
+            if (uInput) uInput.value = "";
+            if (pInput) pInput.value = "";
+            this.showToast("Autenticado como Moderador com sucesso!", "success");
+            this.render();
+            return true;
+          }
+        } catch (err) {
+          console.error("Erro na verificação de autenticação:", err);
+        }
+        return false;
+      }
+
+      logout() {
+        this.isModerator = false;
+        sessionStorage.removeItem(MOD_SESSION_KEY);
+        this.updateModBarUI();
+        this.showToast("Sessão de moderador encerrada.", "success");
+        this.render();
+      }
+
+      updateModBarUI() {
+        const banner = document.getElementById("mod-banner");
+        const btnLogin = document.getElementById("btn-toggle-login");
+        if (this.isModerator) {
+          if (banner) banner.style.display = "flex";
+          if (btnLogin) btnLogin.textContent = "🛡️ CMS Mod [ATIVO]";
+        } else {
+          if (banner) banner.style.display = "none";
+          if (btnLogin) btnLogin.textContent = "🛡️ Mod Login";
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 4. Renderização Geral da Interface
+       * ------------------------------------------------------------- */
+      render() {
+        this.renderTopNav();
+        this.renderBoardHeader();
+        this.renderControls();
+        this.renderFormState();
+        this.renderContent();
+      }
+
+      renderTopNav() {
+        const wrapper = document.getElementById("nav-boards-wrapper");
+        if (!wrapper) return;
+
+        if (this.boards.length === 0) {
+          wrapper.innerHTML = `<span class="bracket">[</span> <span style="color:#93bbee;">Carregando...</span> <span class="bracket">]</span>`;
+          return;
+        }
+
+        const linksHtml = this.boards.map(b => {
+          const isActive = b.slug === this.currentBoardSlug && !this.activeThreadId;
+          return `<a href="#${b.slug}" class="nav-board-link ${isActive ? 'active' : ''}">/${b.slug}/</a>`;
+        }).join(` <span class="bracket">/</span> `);
+
+        wrapper.innerHTML = `<span class="bracket">[</span> ${linksHtml} <span class="bracket">]</span>`;
+      }
+
+      renderBoardHeader() {
+        const board = this.boards.find(b => b.slug === this.currentBoardSlug) || {
+          slug: this.currentBoardSlug,
+          name: "Board",
+          desc: "Imageboard em Tempo Real"
+        };
+
+        const titleEl = document.getElementById("display-board-title");
+        const descEl = document.getElementById("display-board-desc");
+
+        if (titleEl) titleEl.textContent = `/${board.slug}/ - ${board.name}`;
+        if (descEl) descEl.textContent = board.desc || "Imageboard em Tempo Real";
+      }
+
+      renderControls() {
+        const btnNewThread = document.getElementById("btn-new-thread");
+        const controlsRight = document.getElementById("controls-right");
+
+        if (this.activeThreadId) {
+          if (btnNewThread) btnNewThread.textContent = "✍️ Responder a este Tópico";
+          if (controlsRight) {
+            controlsRight.innerHTML = `<a href="#${this.currentBoardSlug}" class="btn-action">⬅ Voltar para /${this.currentBoardSlug}/</a>`;
+          }
+        } else {
+          if (btnNewThread) btnNewThread.textContent = "✍️ Criar Novo Tópico";
+          if (controlsRight) controlsRight.innerHTML = "";
+        }
+      }
+
+      renderFormState() {
+        const formTitle = document.getElementById("form-title-text");
+        const subjectField = document.getElementById("form-subject-field");
+
+        if (this.activeThreadId) {
+          if (formTitle) formTitle.textContent = `Responder ao Tópico No.${this.activeThreadId}`;
+          if (subjectField) subjectField.style.display = "none";
+        } else {
+          if (formTitle) formTitle.textContent = `Criar Novo Tópico em /${this.currentBoardSlug}/`;
+          if (subjectField) subjectField.style.display = "block";
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 5. Renderização dos Tópicos e Posts (com Float Left)
+       * ------------------------------------------------------------- */
+      renderContent() {
+        const container = document.getElementById("main-content");
+        if (!container) return;
+
+        if (this.activeThreadId) {
+          const thread = this.threads.find(t => t.id === this.activeThreadId);
+          if (!thread) {
+            container.innerHTML = `
+              <div class="empty-state">
+                <h3>Tópico não encontrado ou removido da nuvem.</h3>
+                <p><a href="#${this.currentBoardSlug}">Voltar para /${this.currentBoardSlug}/</a></p>
+              </div>
+            `;
+            return;
+          }
+          this.renderThreadDetail(thread, container);
+          return;
+        }
+
+        // Tópicos pertencentes à board ativa
+        const boardThreads = this.threads.filter(t => t.boardSlug === this.currentBoardSlug);
+
+        if (boardThreads.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <h3>Nenhum tópico criado nesta aba ainda.</h3>
+              <p>O Firestore está conectado! Clique em <b>"Criar Novo Tópico"</b> acima para postar na nuvem em tempo real.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Ordenar mais recentes primeiro
+        boardThreads.sort((a, b) => new Date(b.dateISO || 0).getTime() - new Date(a.dateISO || 0).getTime());
+
+        const html = boardThreads.map(thread => {
+          const replies = Array.isArray(thread.replies) ? thread.replies : [];
+          const visibleReplies = replies.slice(-3);
+          const omittedCount = replies.length - visibleReplies.length;
+
+          return `
+            <div class="thread-block" id="t${thread.id}">
+              <!-- Post Original (OP) -->
+              <div class="post-container" id="p${thread.id}">
+                <div class="post-header">
+                  ${thread.subject ? `<span class="post-subject">${this.escape(thread.subject)}</span>` : ""}
+                  <span class="post-author">${this.escape(thread.author || "Anônimo")}</span>
+                  <span>${thread.formattedDate}</span>
+                  <span class="post-number" onclick="window.ychan.quotePost('${thread.id}')">No.${thread.id}</span>
+                  <a href="#thread/${thread.id}">[Responder]</a>
+                  ${this.renderModDeleteBtn(thread.id, true)}
+                </div>
+
+                ${this.renderMediaHtml(thread.image)}
+                <div class="post-body-text">${this.formatText(thread.text)}</div>
+              </div>
+
+              ${omittedCount > 0 ? `
+                <div style="font-size: 12px; color: var(--text-muted); font-style: italic; margin: 6px 0 6px 20px;">
+                  <a href="#thread/${thread.id}">
+                    ${omittedCount} resposta${omittedCount > 1 ? 's' : ''} omitida${omittedCount > 1 ? 's' : ''}. Clique para ver a thread completa.
+                  </a>
+                </div>
+              ` : ""}
+
+              <!-- Respostas Recentes -->
+              ${visibleReplies.length > 0 ? `
+                <div class="replies-list">
+                  ${visibleReplies.map(r => this.renderReplyCard(r, thread.id)).join("")}
+                </div>
+              ` : ""}
+            </div>
+          `;
+        }).join("");
+
+        container.innerHTML = html;
+      }
+
+      renderThreadDetail(thread, container) {
+        const replies = Array.isArray(thread.replies) ? thread.replies : [];
+
+        container.innerHTML = `
+          <div class="thread-block" id="t${thread.id}">
+            <!-- Post Original (OP) -->
+            <div class="post-container" id="p${thread.id}">
+              <div class="post-header">
+                ${thread.subject ? `<span class="post-subject">${this.escape(thread.subject)}</span>` : ""}
+                <span class="post-author">${this.escape(thread.author || "Anônimo")}</span>
+                <span>${thread.formattedDate}</span>
+                <span class="post-number" onclick="window.ychan.quotePost('${thread.id}')">No.${thread.id}</span>
+                ${this.renderModDeleteBtn(thread.id, true)}
+              </div>
+
+              ${this.renderMediaHtml(thread.image)}
+              <div class="post-body-text">${this.formatText(thread.text)}</div>
+            </div>
+
+            <!-- Lista Completa de Respostas em Tempo Real -->
+            <div class="replies-list" style="margin-top: 14px;">
+              ${replies.length === 0 ? `
+                <div style="font-size: 12.5px; color: var(--text-muted); font-style: italic;">
+                  Ainda não há respostas neste tópico. Seja o primeiro a responder na nuvem!
+                </div>
+              ` : replies.map(r => this.renderReplyCard(r, thread.id)).join("")}
+            </div>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px; align-items: center;">
+              <a href="#${this.currentBoardSlug}" class="btn-action">⬅ Voltar ao Board</a>
+              <button type="button" class="btn-action" onclick="window.ychan.openForm()">✍️ Responder</button>
+            </div>
+          </div>
+        `;
+      }
+
+      renderReplyCard(reply, threadId) {
+        return `
+          <div class="reply-card" id="p${reply.id}">
+            <div class="post-header">
+              <span class="post-author">${this.escape(reply.author || "Anônimo")}</span>
+              <span>${reply.formattedDate}</span>
+              <span class="post-number" onclick="window.ychan.quotePost('${reply.id}')">No.${reply.id}</span>
+              ${this.renderModDeleteBtn(reply.id, false, threadId)}
+            </div>
+
+            ${this.renderMediaHtml(reply.image)}
+            <div class="post-body-text">${this.formatText(reply.text)}</div>
+          </div>
+        `;
+      }
+
+      renderMediaHtml(image) {
+        if (!image || !image.base64) return "";
+        return `
+          <div class="thumb-wrapper">
+            <div class="thumb-meta">${this.escape(image.name || "imagem.jpg")} (${image.size || "Base64"})</div>
+            <img src="${image.base64}" class="thumb-img" alt="Anexo" onclick="window.ychan.openLightbox('${image.base64}')">
+          </div>
+        `;
+      }
+
+      renderModDeleteBtn(postId, isThread, parentThreadId = null) {
+        if (!this.isModerator) return "";
+        return `
+          <button type="button" class="btn-delete-post" onclick="window.ychan.deletePost('${postId}', ${isThread}, '${parentThreadId || ''}')" title="Excluir do Firestore">
+            🗑 Excluir
+          </button>
+        `;
+      }
+
+      /* -------------------------------------------------------------
+       * 6. Formatação de Texto (Greentext e Citações >>ID)
+       * ------------------------------------------------------------- */
+      formatText(raw) {
+        if (!raw) return "";
+
+        const lines = raw.split("\n");
+        const formatted = lines.map(line => {
+          let esc = this.escape(line);
+
+          // Greentext
+          if (esc.startsWith("&gt;") && !esc.startsWith("&gt;&gt;")) {
+            return `<span class="greentext">${esc}</span>`;
+          }
+
+          // Citação de post
+          esc = esc.replace(/&gt;&gt;(\d+)/g, (match, id) => {
+            return `<a href="javascript:void(0)" class="quote-link" onclick="window.ychan.goToPost('${id}')">&gt;&gt;${id}</a>`;
+          });
+
+          return esc;
+        });
+
+        return formatted.join("<br>");
+      }
+
+      escape(str) {
+        if (!str) return "";
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      goToPost(postId) {
+        const el = document.getElementById(`p${postId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.classList.add("highlight");
+          setTimeout(() => el.classList.remove("highlight"), 2500);
+        } else {
+          const thread = this.threads.find(t => t.id === postId || (t.replies && t.replies.some(r => r.id === postId)));
+          if (thread) {
+            window.location.hash = `#thread/${thread.id}`;
+            setTimeout(() => {
+              const target = document.getElementById(`p${postId}`);
+              if (target) {
+                target.scrollIntoView({ behavior: "smooth", block: "center" });
+                target.classList.add("highlight");
+                setTimeout(() => target.classList.remove("highlight"), 2500);
+              }
+            }, 120);
+          } else {
+            this.showToast(`Post >>${postId} não encontrado.`, "danger");
+          }
+        }
+      }
+
+      quotePost(postId) {
+        this.openForm();
+        const commentBox = document.getElementById("input-post-comment");
+        if (commentBox) {
+          const current = commentBox.value.trim();
+          commentBox.value = (current ? current + "\n" : "") + `>>${postId}\n`;
+          commentBox.focus();
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 7. Envio para Firestore (addDoc e updateDoc)
+       * ------------------------------------------------------------- */
+      async submitPost() {
+        const authorInput = document.getElementById("input-author-name");
+        const subjectInput = document.getElementById("input-post-subject");
+        const commentInput = document.getElementById("input-post-comment");
+        const submitBtn = document.getElementById("btn-submit");
+
+        const text = commentInput ? commentInput.value.trim() : "";
+        const author = authorInput && authorInput.value.trim() ? authorInput.value.trim() : "Anônimo";
+        const subject = subjectInput ? subjectInput.value.trim() : "";
+
+        if (!text && !this.currentAttachmentBase64) {
+          this.showToast("Digite uma mensagem ou anexe uma imagem.", "danger");
+          return;
+        }
+
+        const postId = this.getNextPostNumber();
+        const now = new Date();
+        const formattedDate = this.formatDate(now);
+
+        const imagePayload = this.currentAttachmentBase64 ? {
+          name: this.currentAttachmentName || "imagem.jpg",
+          size: this.currentAttachmentSize || "N/A",
+          base64: this.currentAttachmentBase64
+        } : null;
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Gravando...";
+        }
+
+        try {
+          if (this.activeThreadId) {
+            // Adicionar resposta (Reply) ao documento da thread no Firestore
+            const thread = this.threads.find(t => t.id === this.activeThreadId);
+            if (!thread || !thread.docId) {
+              this.showToast("Tópico original não encontrado no banco.", "danger");
+              return;
+            }
+
+            const newReply = {
+              id: postId,
+              author: author,
+              text: text,
+              formattedDate: formattedDate,
+              dateISO: now.toISOString(),
+              image: imagePayload
+            };
+
+            const existingReplies = Array.isArray(thread.replies) ? thread.replies : [];
+            await updateDoc(doc(db, "threads", thread.docId), {
+              replies: [...existingReplies, newReply],
+              lastActivity: serverTimestamp()
+            });
+
+            this.showToast(`Resposta No.${postId} enviada ao Firestore!`, "success");
+          } else {
+            // Criar Novo Tópico (OP) no Firestore
+            const newThread = {
+              id: postId,
+              postNumber: postId,
+              boardSlug: this.currentBoardSlug,
+              subject: subject,
+              author: author,
+              text: text,
+              formattedDate: formattedDate,
+              dateISO: now.toISOString(),
+              createdAt: serverTimestamp(),
+              lastActivity: serverTimestamp(),
+              image: imagePayload,
+              replies: []
+            };
+
+            await addDoc(collection(db, "threads"), newThread);
+            this.showToast(`Tópico No.${postId} criado na nuvem!`, "success");
+          }
+
+          // Limpar formulário
+          if (commentInput) commentInput.value = "";
+          if (subjectInput) subjectInput.value = "";
+          this.removeAttachment();
+          this.closeForm();
+        } catch (error) {
+          console.error("Erro ao salvar no Firestore:", error);
+          this.showToast("Erro ao salvar no Firestore: " + error.message, "danger");
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Postar";
+          }
+        }
+      }
+
+      formatDate(date) {
+        const pad = n => n.toString().padStart(2, "0");
+        const d = pad(date.getDate());
+        const m = pad(date.getMonth() + 1);
+        const y = date.getFullYear().toString().slice(-2);
+        const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+        const dayName = days[date.getDay()];
+        const hh = pad(date.getHours());
+        const mm = pad(date.getMinutes());
+        const ss = pad(date.getSeconds());
+        return `${d}/${m}/${y}(${dayName})${hh}:${mm}:${ss}`;
+      }
+
+      /* -------------------------------------------------------------
+       * 8. Upload e Otimização de Imagem em Canvas para Base64
+       * ------------------------------------------------------------- */
+      handleFileUpload(file) {
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+          this.showToast("Envie apenas arquivos de imagem.", "danger");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            // Otimização para até 600px para garantir tamanho ultraleve no Firestore
+            const maxDim = 600;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const base64 = canvas.toDataURL("image/jpeg", 0.72);
+            const approxKb = Math.round((base64.length * 3) / 4 / 1024);
+
+            this.currentAttachmentBase64 = base64;
+            this.currentAttachmentName = file.name;
+            this.currentAttachmentSize = `${approxKb} KB`;
+
+            this.showPreview();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      showPreview() {
+        const bar = document.getElementById("preview-bar");
+        const imgTag = document.getElementById("preview-tag");
+        const details = document.getElementById("preview-details");
+        const label = document.getElementById("file-status-label");
+
+        if (bar) bar.classList.remove("hidden");
+        if (imgTag) imgTag.src = this.currentAttachmentBase64;
+        if (details) details.textContent = `${this.currentAttachmentName} (${this.currentAttachmentSize})`;
+        if (label) label.textContent = this.currentAttachmentName;
+      }
+
+      removeAttachment() {
+        this.currentAttachmentBase64 = null;
+        this.currentAttachmentName = null;
+        this.currentAttachmentSize = null;
+
+        const fileInput = document.getElementById("file-input-element");
+        const bar = document.getElementById("preview-bar");
+        const label = document.getElementById("file-status-label");
+
+        if (fileInput) fileInput.value = "";
+        if (bar) bar.classList.add("hidden");
+        if (label) label.textContent = "Nenhum arquivo selecionado";
+      }
+
+      /* -------------------------------------------------------------
+       * 9. Ações de Moderação no Firestore (Excluir)
+       * ------------------------------------------------------------- */
+      async deletePost(postId, isThread, parentThreadId) {
+        if (!this.isModerator) return;
+
+        if (!confirm(`Deseja excluir ${isThread ? 'o tópico completo' : 'esta resposta'} No.${postId} do Firestore?`)) {
+          return;
+        }
+
+        try {
+          if (isThread) {
+            const thread = this.threads.find(t => t.id === postId);
+            if (thread && thread.docId) {
+              await deleteDoc(doc(db, "threads", thread.docId));
+              this.showToast(`Tópico No.${postId} excluído da nuvem.`, "success");
+              if (this.activeThreadId === postId) {
+                window.location.hash = `#${this.currentBoardSlug}`;
+              }
+            }
+          } else {
+            const thread = this.threads.find(t => t.id === parentThreadId || (t.replies && t.replies.some(r => r.id === postId)));
+            if (thread && thread.docId && thread.replies) {
+              const updatedReplies = thread.replies.filter(r => r.id !== postId);
+              await updateDoc(doc(db, "threads", thread.docId), {
+                replies: updatedReplies
+              });
+              this.showToast(`Resposta No.${postId} excluída da nuvem.`, "success");
+            }
+          }
+        } catch (error) {
+          console.error("Erro ao excluir do Firestore:", error);
+          this.showToast("Erro ao excluir: " + error.message, "danger");
+        }
+      }
+
+      /* -------------------------------------------------------------
+       * 10. Painel CMS de Gerenciamento de Abas/Boards na Nuvem
+       * ------------------------------------------------------------- */
+      openCms() {
+        if (!this.isModerator) {
+          this.openModal("modal-mod-login");
+          return;
+        }
+        this.renderCmsTable();
+        this.openModal("modal-cms");
+      }
+
+      renderCmsTable() {
+        const tbody = document.getElementById("cms-table-body");
+        if (!tbody) return;
+
+        const rows = this.boards.map(b => {
+          return `
+            <tr>
+              <td><b>/${b.slug}/</b></td>
+              <td>${this.escape(b.name)}</td>
+              <td>${this.escape(b.desc)}</td>
+              <td>
+                <button type="button" class="cms-btn-mini cms-btn-edit" onclick="window.ychan.editBoard('${b.slug}')">Editar</button>
+                <button type="button" class="cms-btn-mini cms-btn-del" onclick="window.ychan.deleteBoard('${b.slug}')">Excluir</button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+        tbody.innerHTML = rows;
+      }
+
+      async saveBoardFromCms(e) {
+        e.preventDefault();
+        const slugInput = document.getElementById("cms-slug-input");
+        const nameInput = document.getElementById("cms-name-input");
+        const descInput = document.getElementById("cms-desc-input");
+
+        const slug = slugInput.value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+        const name = nameInput.value.trim();
+        const desc = descInput.value.trim();
+
+        if (!slug || !name) {
+          this.showToast("Preencha a sigla e o nome da aba.", "danger");
+          return;
+        }
+
+        try {
+          await setDoc(doc(db, "boards", slug), {
+            slug: slug,
+            name: name,
+            desc: desc,
+            updatedAt: serverTimestamp()
+          });
+
+          this.showToast(`Aba /${slug}/ salva no Firestore com sucesso!`, "success");
+          this.resetCmsForm();
+        } catch (err) {
+          console.error("Erro ao salvar aba no Firestore:", err);
+          this.showToast("Erro ao salvar aba: " + err.message, "danger");
+        }
+      }
+
+      editBoard(slug) {
+        const board = this.boards.find(b => b.slug === slug);
+        if (!board) return;
+
+        const slugInput = document.getElementById("cms-slug-input");
+        const nameInput = document.getElementById("cms-name-input");
+        const descInput = document.getElementById("cms-desc-input");
+
+        slugInput.value = board.slug;
+        slugInput.setAttribute("readonly", "true");
+        nameInput.value = board.name;
+        descInput.value = board.desc;
+        nameInput.focus();
+      }
+
+      async deleteBoard(slug) {
+        if (!confirm(`Deseja realmente excluir a aba /${slug}/ e todos os tópicos associados da nuvem?`)) {
+          return;
+        }
+
+        if (this.boards.length <= 1) {
+          this.showToast("Você não pode excluir a única aba restante.", "danger");
+          return;
+        }
+
+        try {
+          await deleteDoc(doc(db, "boards", slug));
+
+          // Remover os tópicos daquela board no Firestore
+          const toDelete = this.threads.filter(t => t.boardSlug === slug);
+          for (const t of toDelete) {
+            if (t.docId) {
+              await deleteDoc(doc(db, "threads", t.docId));
+            }
+          }
+
+          this.showToast(`Aba /${slug}/ excluída do Firestore.`, "success");
+
+          if (this.currentBoardSlug === slug) {
+            const remaining = this.boards.filter(b => b.slug !== slug);
+            this.currentBoardSlug = remaining.length > 0 ? remaining[0].slug : "b";
+            window.location.hash = `#${this.currentBoardSlug}`;
+          }
+        } catch (err) {
+          console.error("Erro ao excluir aba do Firestore:", err);
+          this.showToast("Erro ao excluir: " + err.message, "danger");
+        }
+      }
+
+      resetCmsForm() {
+        const form = document.getElementById("cms-board-form");
+        const slugInput = document.getElementById("cms-slug-input");
+        if (form) form.reset();
+        if (slugInput) slugInput.removeAttribute("readonly");
+      }
+
+      /* -------------------------------------------------------------
+       * 11. Controle de Modais e Lightbox
+       * ------------------------------------------------------------- */
+      openForm() {
+        const form = document.getElementById("form-container");
+        if (form) {
+          form.classList.remove("hidden");
+          form.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+
+      closeForm() {
+        const form = document.getElementById("form-container");
+        if (form) form.classList.add("hidden");
+      }
+
+      openModal(modalId) {
+        const el = document.getElementById(modalId);
+        if (el) el.classList.remove("hidden");
+
+        if (modalId === "modal-mod-login") {
+          const form = document.getElementById("form-login-mod");
+          if (form) form.reset();
+          const uInput = document.getElementById("mod-adm-uid");
+          const pInput = document.getElementById("mod-adm-pwd");
+          if (uInput) uInput.value = "";
+          if (pInput) pInput.value = "";
+
+          // Anula tentativas de preenchimento automático de extensões e navegadores
+          setTimeout(() => {
+            if (uInput) uInput.value = "";
+            if (pInput) pInput.value = "";
+          }, 30);
+          setTimeout(() => {
+            if (uInput) {
+              uInput.value = "";
+              uInput.focus();
+            }
+            if (pInput) pInput.value = "";
+          }, 100);
+        }
+      }
+
+      closeModal(modalId) {
+        const el = document.getElementById(modalId);
+        if (el) el.classList.add("hidden");
+        if (modalId === "modal-mod-login") {
+          const form = document.getElementById("form-login-mod");
+          if (form) form.reset();
+          const uInput = document.getElementById("mod-adm-uid");
+          const pInput = document.getElementById("mod-adm-pwd");
+          if (uInput) uInput.value = "";
+          if (pInput) pInput.value = "";
+        }
+      }
+
+      openLightbox(src) {
+        const modal = document.getElementById("lightbox-modal");
+        const img = document.getElementById("lightbox-img");
+        if (modal && img) {
+          img.src = src;
+          modal.classList.remove("hidden");
+        }
+      }
+
+      closeLightbox() {
+        const modal = document.getElementById("lightbox-modal");
+        if (modal) modal.classList.add("hidden");
+      }
+
+      showToast(msg, type = "info") {
+        const toast = document.createElement("div");
+        toast.className = `toast-box ${type}`;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          setTimeout(() => toast.remove(), 300);
+        }, 3200);
+      }
+
+      /* -------------------------------------------------------------
+       * 12. Listeners de Eventos
+       * ------------------------------------------------------------- */
+      bindEvents() {
+        const btnNewThread = document.getElementById("btn-new-thread");
+        if (btnNewThread) {
+          btnNewThread.addEventListener("click", () => {
+            const form = document.getElementById("form-container");
+            if (form) {
+              form.classList.toggle("hidden");
+              if (!form.classList.contains("hidden")) {
+                form.scrollIntoView({ behavior: "smooth" });
+              }
+            }
+          });
+        }
+
+        const btnCloseForm = document.getElementById("btn-close-form");
+        if (btnCloseForm) {
+          btnCloseForm.addEventListener("click", () => this.closeForm());
+        }
+
+        // Formulário de Postagem
+        const postForm = document.getElementById("main-post-form");
+        if (postForm) {
+          postForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            this.submitPost();
+          });
+        }
+
+        // Upload de arquivo
+        const fileInput = document.getElementById("file-input-element");
+        if (fileInput) {
+          fileInput.addEventListener("change", (e) => {
+            if (e.target.files && e.target.files[0]) {
+              this.handleFileUpload(e.target.files[0]);
+            }
+          });
+        }
+
+        const btnRemoveAttachment = document.getElementById("btn-remove-attachment");
+        if (btnRemoveAttachment) {
+          btnRemoveAttachment.addEventListener("click", () => this.removeAttachment());
+        }
+
+        // Mod Login
+        const btnToggleLogin = document.getElementById("btn-toggle-login");
+        if (btnToggleLogin) {
+          btnToggleLogin.addEventListener("click", () => {
+            if (this.isModerator) {
+              this.openCms();
+            } else {
+              this.openModal("modal-mod-login");
+            }
+          });
+        }
+
+        const btnCloseLogin = document.getElementById("btn-close-login");
+        const btnCancelLogin = document.getElementById("btn-cancel-login");
+        if (btnCloseLogin) btnCloseLogin.addEventListener("click", () => this.closeModal("modal-mod-login"));
+        if (btnCancelLogin) btnCancelLogin.addEventListener("click", () => this.closeModal("modal-mod-login"));
+
+        const loginForm = document.getElementById("form-login-mod");
+        if (loginForm) {
+          loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const u = document.getElementById("mod-adm-uid").value;
+            const p = document.getElementById("mod-adm-pwd").value;
+            const ok = await this.login(u, p);
+            if (!ok) {
+              this.showToast("Usuário ou senha incorretos!", "danger");
+            }
+          });
+        }
+
+        // Logout Mod
+        const btnLogout = document.getElementById("btn-do-logout");
+        if (btnLogout) {
+          btnLogout.addEventListener("click", () => this.logout());
+        }
+
+        // CMS Modal
+        const btnOpenCms = document.getElementById("btn-open-cms");
+        if (btnOpenCms) btnOpenCms.addEventListener("click", () => this.openCms());
+
+        const btnCloseCms = document.getElementById("btn-close-cms");
+        const btnFinishCms = document.getElementById("btn-finish-cms");
+        if (btnCloseCms) btnCloseCms.addEventListener("click", () => this.closeModal("modal-cms"));
+        if (btnFinishCms) btnFinishCms.addEventListener("click", () => this.closeModal("modal-cms"));
+
+        const cmsForm = document.getElementById("cms-board-form");
+        if (cmsForm) cmsForm.addEventListener("submit", (e) => this.saveBoardFromCms(e));
+
+        const btnResetCms = document.getElementById("btn-cms-reset-form");
+        if (btnResetCms) btnResetCms.addEventListener("click", () => this.resetCmsForm());
+
+        // Lightbox fechar ao clicar
+        const lightbox = document.getElementById("lightbox-modal");
+        if (lightbox) {
+          lightbox.addEventListener("click", () => this.closeLightbox());
+        }
+      }
+    }
+
+    // Inicialização global
+    window.addEventListener("DOMContentLoaded", () => {
+      window.ychan = new YchanFirebase();
+    });
+  </script>
+</body>
+</html>
